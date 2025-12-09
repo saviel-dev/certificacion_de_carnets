@@ -14,16 +14,149 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_logs: {
+        Row: {
+          action: string
+          id: string
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+          performed_at: string
+          performed_by: string | null
+          record_id: string | null
+          table_name: string
+        }
+        Insert: {
+          action: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          performed_at?: string
+          performed_by?: string | null
+          record_id?: string | null
+          table_name: string
+        }
+        Update: {
+          action?: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          performed_at?: string
+          performed_by?: string | null
+          record_id?: string | null
+          table_name?: string
+        }
+        Relationships: []
+      }
+      qr_codes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_revoked: boolean
+          revoked_at: string | null
+          token: string
+          worker_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_revoked?: boolean
+          revoked_at?: string | null
+          token: string
+          worker_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_revoked?: boolean
+          revoked_at?: string | null
+          token?: string
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qr_codes_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workers: {
+        Row: {
+          cedula: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          department: string
+          email: string | null
+          first_name: string
+          id: string
+          internal_id: string
+          last_name: string
+          phone: string | null
+          photo_url: string | null
+          position: string
+          status: Database["public"]["Enums"]["worker_status"]
+          updated_at: string
+          valid_from: string
+          valid_until: string
+        }
+        Insert: {
+          cedula: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          department: string
+          email?: string | null
+          first_name: string
+          id?: string
+          internal_id: string
+          last_name: string
+          phone?: string | null
+          photo_url?: string | null
+          position: string
+          status?: Database["public"]["Enums"]["worker_status"]
+          updated_at?: string
+          valid_from?: string
+          valid_until: string
+        }
+        Update: {
+          cedula?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          department?: string
+          email?: string | null
+          first_name?: string
+          id?: string
+          internal_id?: string
+          last_name?: string
+          phone?: string | null
+          photo_url?: string | null
+          position?: string
+          status?: Database["public"]["Enums"]["worker_status"]
+          updated_at?: string
+          valid_from?: string
+          valid_until?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_qr_token: { Args: never; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      worker_status: "ACTIVO" | "INACTIVO" | "VENCIDO"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +283,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      worker_status: ["ACTIVO", "INACTIVO", "VENCIDO"],
+    },
   },
 } as const
