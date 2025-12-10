@@ -41,7 +41,7 @@ export function downloadQRCode(worker: Worker, qr: QRCode) {
     width: size,
     margin: 0,
     color: {
-      dark: '#1e3a5f',
+      dark: '#1a6b47',
       light: '#ffffff',
     },
   }, (error: Error) => {
@@ -54,7 +54,7 @@ export function downloadQRCode(worker: Worker, qr: QRCode) {
     ctx.drawImage(qrCanvas, padding, padding);
     
     // Add text
-    ctx.fillStyle = '#1e3a5f';
+    ctx.fillStyle = '#1a6b47';
     ctx.font = 'bold 18px Plus Jakarta Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(`${worker.first_name} ${worker.last_name}`, totalSize / 2, totalSize + 30);
@@ -88,7 +88,7 @@ export function QRPreview({ token, size = 200 }: QRPreviewProps) {
         size={size}
         level="H"
         includeMargin
-        fgColor="hsl(217, 91%, 30%)"
+        fgColor="hsl(152, 69%, 35%)"
         bgColor="#ffffff"
       />
     </div>
