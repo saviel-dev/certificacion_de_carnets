@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Workers from "./pages/Workers";
 import Audit from "./pages/Audit";
 import Verify from "./pages/Verify";
+import WorkerDetails from "./pages/WorkerDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/workers" element={<Workers />} />
+            <Route path="/workers/:id" element={<WorkerDetails />} />
             <Route path="/audit" element={<Audit />} />
             <Route path="/verify/:token" element={<Verify />} />
             <Route path="*" element={<NotFound />} />

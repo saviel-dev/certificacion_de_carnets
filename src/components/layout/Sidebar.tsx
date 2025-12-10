@@ -6,7 +6,8 @@ import {
   LogOut,
   Shield,
   History,
-  LayoutDashboard
+  LayoutDashboard,
+  Globe
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -25,12 +26,12 @@ export function Sidebar() {
     <div className="flex h-full w-64 flex-col bg-sidebar">
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 px-6 border-b border-sidebar-border">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg gradient-primary shadow-glow">
-          <Shield className="h-5 w-5 text-sidebar-primary-foreground" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg">
+          <img src="public/img/logo.png" alt="logo" width={50} height={50} />
         </div>
         <div>
-          <h1 className="text-lg font-bold text-sidebar-foreground">CertiCarnet</h1>
-          <p className="text-xs text-sidebar-foreground/60">Sistema de Certificación</p>
+          <h1 className="text-lg font-bold text-sidebar-foreground">Tiunet</h1>
+          <p className="text-xs text-sidebar-foreground/60">Trabajadores</p>
         </div>
       </div>
 
