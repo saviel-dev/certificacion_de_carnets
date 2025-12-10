@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { useWorkers, useGenerateQR, useRevokeQR, useDeleteWorker, useDepartments } from '@/hooks/useWorkers';
 import { WorkerCard } from '@/components/workers/WorkerCard';
@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Search, Users, Loader2 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
+import { toast } from 'sonner';
 
 export default function Workers() {
   const [search, setSearch] = useState('');
@@ -17,7 +18,7 @@ export default function Workers() {
   const [formOpen, setFormOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
-  const [profileWorker, setProfileWorker] = useState<(Worker & { qr_codes: QRCode[] }) | null>(null);
+  const [profileWorkerId, setProfileWorkerId] = useState<string | null>(null);
 
   const { data: workers, isLoading } = useWorkers({ search, status: statusFilter });
   const { data: departments } = useDepartments();
@@ -25,14 +26,31 @@ export default function Workers() {
   const revokeQR = useRevokeQR();
   const deleteWorker = useDeleteWorker();
 
+  // Get the current profile worker from the workers list (always fresh data)
+  const profileWorker = profileWorkerId 
+    ? workers?.find(w => w.id === profileWorkerId) || null 
+    : null;
+
   const handleEdit = (worker: Worker) => {
     setSelectedWorker(worker);
     setFormOpen(true);
   };
 
   const handleViewProfile = (worker: Worker & { qr_codes: QRCode[] }) => {
-    setProfileWorker(worker);
+    setProfileWorkerId(worker.id);
     setProfileOpen(true);
+  };
+
+  const handleGenerateQR = async (workerId: string) => {
+    const worker = workers?.find(w => w.id === workerId);
+    const hasActiveQR = worker?.qr_codes.some(qr => !qr.is_revoked);
+    
+    if (hasActiveQR) {
+      toast.error('Este trabajador ya tiene un código QR activo');
+      return;
+    }
+    
+    generateQR.mutate(workerId);
   };
 
   const handleDownloadQR = (worker: Worker, qr: QRCode) => {
@@ -145,7 +163,7 @@ export default function Workers() {
         open={profileOpen}
         onOpenChange={setProfileOpen}
         worker={profileWorker}
-        onGenerateQR={(id) => generateQR.mutate(id)}
+        onGenerateQR={handleGenerateQR}
         onRevokeQR={(id) => revokeQR.mutate(id)}
         onDownloadQR={handleDownloadQR}
       />
