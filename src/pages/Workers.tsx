@@ -3,6 +3,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { useWorkers, useGenerateQR, useRevokeQR, useDeleteWorker, useDepartments } from '@/hooks/useWorkers';
 import { WorkerCard } from '@/components/workers/WorkerCard';
 import { WorkerForm } from '@/components/workers/WorkerForm';
+import { WorkerProfileModal } from '@/components/workers/WorkerProfileModal';
 import { Worker, QRCode, WorkerStatus } from '@/types/worker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +15,9 @@ export default function Workers() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<WorkerStatus | 'all'>('all');
   const [formOpen, setFormOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
+  const [profileWorker, setProfileWorker] = useState<(Worker & { qr_codes: QRCode[] }) | null>(null);
 
   const { data: workers, isLoading } = useWorkers({ search, status: statusFilter });
   const { data: departments } = useDepartments();
@@ -25,6 +28,11 @@ export default function Workers() {
   const handleEdit = (worker: Worker) => {
     setSelectedWorker(worker);
     setFormOpen(true);
+  };
+
+  const handleViewProfile = (worker: Worker & { qr_codes: QRCode[] }) => {
+    setProfileWorker(worker);
+    setProfileOpen(true);
   };
 
   const handleDownloadQR = (worker: Worker, qr: QRCode) => {
@@ -44,7 +52,7 @@ export default function Workers() {
       ctx.drawImage(tempCanvas, 40, 40, size, size);
     }
 
-    ctx.fillStyle = '#1e3a5f';
+    ctx.fillStyle = '#1a6b47';
     ctx.font = 'bold 18px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(`${worker.first_name} ${worker.last_name}`, canvas.width / 2, size + 70);
@@ -113,9 +121,7 @@ export default function Workers() {
                   worker={worker}
                   onEdit={handleEdit}
                   onDelete={(id) => deleteWorker.mutate(id)}
-                  onGenerateQR={(id) => generateQR.mutate(id)}
-                  onRevokeQR={(id) => revokeQR.mutate(id)}
-                  onDownloadQR={handleDownloadQR}
+                  onViewProfile={handleViewProfile}
                 />
                 {worker.qr_codes.filter(qr => !qr.is_revoked).map(qr => (
                   <QRCodeCanvas
@@ -124,6 +130,7 @@ export default function Workers() {
                     value={`${window.location.origin}/verify/${qr.token}`}
                     size={400}
                     style={{ display: 'none' }}
+                    fgColor="#1a6b47"
                   />
                 ))}
               </div>
@@ -133,6 +140,15 @@ export default function Workers() {
       </div>
 
       <WorkerForm open={formOpen} onOpenChange={setFormOpen} worker={selectedWorker} />
+      
+      <WorkerProfileModal
+        open={profileOpen}
+        onOpenChange={setProfileOpen}
+        worker={profileWorker}
+        onGenerateQR={(id) => generateQR.mutate(id)}
+        onRevokeQR={(id) => revokeQR.mutate(id)}
+        onDownloadQR={handleDownloadQR}
+      />
     </DashboardLayout>
   );
 }
