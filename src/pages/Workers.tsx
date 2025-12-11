@@ -9,9 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Search, Users, Loader2 } from 'lucide-react';
+import { Plus, Search, Users, Loader2, HelpCircle } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { toast } from 'sonner';
+import { useWorkerTour } from '@/hooks/useWorkerTour';
 
 export default function Workers() {
   const [search, setSearch] = useState('');
@@ -26,6 +27,7 @@ export default function Workers() {
   const generateQR = useGenerateQR();
   const revokeQR = useRevokeQR();
   const deleteWorker = useDeleteWorker();
+  const { startTour } = useWorkerTour();
 
   // Get the current profile worker from the workers list (always fresh data)
   const profileWorker = profileWorkerId 
@@ -98,13 +100,24 @@ export default function Workers() {
               Gestiona el registro de trabajadores y códigos QR
             </p>
           </div>
-          <Button 
-            onClick={() => { setSelectedWorker(null); setFormOpen(true); }}
-            className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Trabajador
-          </Button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button 
+              variant="outline"
+              onClick={startTour}
+              className="flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-300"
+            >
+              <HelpCircle className="mr-2 h-4 w-4" />
+              Cómo usar
+            </Button>
+            <Button 
+              id="new-worker-btn"
+              onClick={() => { setSelectedWorker(null); setFormOpen(true); }}
+              className="flex-1 sm:flex-none shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Trabajador
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -179,7 +192,7 @@ export default function Workers() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 animate-slide-up">
+          <div id="workers-grid" className="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 animate-slide-up">
             {workers?.map((worker, index) => (
               <div 
                 key={worker.id}
