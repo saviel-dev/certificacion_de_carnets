@@ -37,7 +37,7 @@ export function Sidebar({ onClose }: SidebarProps) {
             <img src="/img/logo sin fondo.png" alt="logo" className="w-8 h-8 object-contain" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-sidebar-foreground">Tiunet</h1>
+            <h1 className="text-lg font-bold text-sidebar-foreground">Infinet Tiuna</h1>
             <p className="text-xs text-sidebar-foreground/60">Trabajadores</p>
           </div>
         </div>

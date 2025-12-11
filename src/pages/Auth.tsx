@@ -154,12 +154,12 @@ export default function Auth() {
             <div className="bg-white p-1 rounded-md shadow-sm">
               <img 
                 src="/img/logo sin fondo.png" 
-                alt="CertiCarnet Logo" 
+                alt="Infinet Tiuna Logo" 
                 className="w-10 h-10 object-contain"
               />
             </div>
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
-              CertiCarnet
+              Infinet Tiuna
             </h1>
           </div>
           <p className="text-slate-500 text-sm">
@@ -262,7 +262,7 @@ export default function Auth() {
       {/* Footer Branding */}
       <div className="mt-8 flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
         <span className="text-xs text-slate-500 font-medium">
-          © {new Date().getFullYear()} Tiunet. Todos los derechos reservados.
+          © {new Date().getFullYear()} Infinet Tiuna. Todos los derechos reservados.
         </span>
       </div>
     </div>

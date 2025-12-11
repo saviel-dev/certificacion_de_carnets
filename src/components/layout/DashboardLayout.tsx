@@ -63,7 +63,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </Button>
           <div className="flex items-center gap-2">
             <img src="/img/logo sin fondo.png" alt="Logo" className="h-8 w-8 object-contain" />
-            <span className="font-bold text-lg text-foreground">CertiCarnet</span>
+            <span className="font-bold text-lg text-foreground">Infinet Tiuna</span>
           </div>
           <div className="w-10" /> {/* Spacer for centering */}
         </header>
