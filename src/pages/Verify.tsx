@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Worker, WorkerStatus } from '@/types/worker';
-import { StatusBadge } from '@/components/ui/status-badge';
+import { Worker } from '@/types/worker';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, XCircle, AlertTriangle, User, Building2, Calendar, Shield, Loader2 } from 'lucide-react';
+import { Loader2, XCircle, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 export default function Verify() {
   const { token } = useParams<{ token: string }>();
   const [loading, setLoading] = useState(true);
-  const [worker, setWorker] = useState<Worker | null>(null);
+  const [workerId, setWorkerId] = useState<string | null>(null);
   const [status, setStatus] = useState<'valid' | 'invalid' | 'expired' | 'revoked'>('invalid');
+  const [expirationDate, setExpirationDate] = useState<string>('');
 
   useEffect(() => {
     async function verify() {
@@ -37,10 +37,10 @@ export default function Verify() {
       }
 
       const workerData = qrData.workers as unknown as Worker;
-      setWorker(workerData);
 
       const today = new Date();
       const validUntil = new Date(workerData.valid_until);
+      setExpirationDate(workerData.valid_until);
 
       if (workerData.status !== 'ACTIVO' || workerData.deleted_at) {
         setStatus('invalid');
@@ -48,88 +48,69 @@ export default function Verify() {
         setStatus('expired');
       } else {
         setStatus('valid');
+        setWorkerId(workerData.id);
       }
     }
 
     verify();
   }, [token]);
 
+  // Redirect to worker details if valid
+  if (status === 'valid' && workerId) {
+    return <Navigate to={`/workers/${workerId}`} replace />;
+  }
+
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-400 to-emerald-600 p-4">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-white mx-auto mb-4" />
+          <p className="text-white text-lg">Verificando código QR...</p>
+        </div>
       </div>
     );
   }
 
-  const statusConfig = {
-    valid: { icon: CheckCircle, color: 'text-success', bg: 'bg-success/10', title: 'Registro Válido', desc: 'Este trabajador está activo y su información es verificable.' },
-    invalid: { icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10', title: 'Registro No Válido', desc: 'Este código QR no corresponde a un trabajador activo.' },
-    expired: { icon: AlertTriangle, color: 'text-warning', bg: 'bg-warning/10', title: 'Registro Vencido', desc: 'La vigencia de este trabajador ha expirado.' },
-    revoked: { icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10', title: 'QR Revocado', desc: 'Este código QR ha sido revocado y ya no es válido.' },
-  };
-
-  const config = statusConfig[status];
-  const Icon = config.icon;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-4">
-      <div className="mx-auto max-w-md pt-8">
-        <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl gradient-primary">
-            <Shield className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <h1 className="text-lg font-bold">CertiCarnet</h1>
-          <p className="text-sm text-muted-foreground">Verificación de Trabajador</p>
-        </div>
-
-        <Card className={`border-2 ${status === 'valid' ? 'border-success/30' : status === 'expired' ? 'border-warning/30' : 'border-destructive/30'}`}>
-          <CardContent className="p-6">
-            <div className={`mb-6 flex flex-col items-center rounded-xl ${config.bg} p-6`}>
-              <Icon className={`h-12 w-12 ${config.color}`} />
-              <h2 className={`mt-3 text-xl font-bold ${config.color}`}>{config.title}</h2>
-              <p className="mt-1 text-center text-sm text-muted-foreground">{config.desc}</p>
-            </div>
-
-            {worker && status !== 'revoked' && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-muted">
-                    {worker.photo_url ? (
-                      <img src={worker.photo_url} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <User className="h-8 w-8 text-muted-foreground" />
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">{worker.first_name} {worker.last_name}</h3>
-                    <p className="text-sm text-muted-foreground font-mono">{worker.internal_id}</p>
-                    <StatusBadge status={worker.status} size="sm" />
-                  </div>
-                </div>
-
-                <div className="space-y-2 rounded-lg bg-muted/50 p-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">{worker.position}</span>
-                    <span className="text-muted-foreground">• {worker.department}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span>Vigente hasta: {format(new Date(worker.valid_until), 'dd MMMM yyyy', { locale: es })}</span>
-                  </div>
-                </div>
-              </div>
-            )}
+  // Error states
+  if (status === 'invalid' || status === 'revoked') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-red-400 to-red-600 p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center">
+            <XCircle className="h-16 w-16 text-red-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              {status === 'revoked' ? 'Código QR Revocado' : 'Código QR No Válido'}
+            </h2>
+            <p className="text-gray-600">
+              {status === 'revoked' 
+                ? 'Este código QR ha sido revocado y ya no es válido.'
+                : 'Este código QR no corresponde a ningún trabajador activo.'}
+            </p>
           </CardContent>
         </Card>
-
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Verificación realizada el {format(new Date(), "dd 'de' MMMM 'de' yyyy, HH:mm", { locale: es })}
-        </p>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (status === 'expired') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-orange-400 to-orange-600 p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center">
+            <AlertTriangle className="h-16 w-16 text-orange-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Carnet Vencido</h2>
+            <p className="text-gray-600 mb-4">
+              La vigencia de este carnet expiró el{' '}
+              {format(new Date(expirationDate), "dd 'de' MMMM 'de' yyyy", { locale: es })}
+            </p>
+            <p className="text-sm text-gray-500">
+              Por favor, contacte al administrador para renovar el carnet.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return null;
 }

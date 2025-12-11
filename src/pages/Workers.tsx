@@ -8,6 +8,7 @@ import { Worker, QRCode, WorkerStatus } from '@/types/worker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Search, Users, Loader2 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { toast } from 'sonner';
@@ -86,55 +87,105 @@ export default function Workers() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in">
+        {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Trabajadores</h1>
-            <p className="text-muted-foreground">Gestiona el registro de trabajadores y códigos QR</p>
+          <div className="space-y-1">
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Trabajadores
+            </h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              Gestiona el registro de trabajadores y códigos QR
+            </p>
           </div>
-          <Button onClick={() => { setSelectedWorker(null); setFormOpen(true); }}>
+          <Button 
+            onClick={() => { setSelectedWorker(null); setFormOpen(true); }}
+            className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+          >
             <Plus className="mr-2 h-4 w-4" />
             Nuevo Trabajador
           </Button>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por nombre, cédula o ID..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as WorkerStatus | 'all')}>
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder="Estado" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="ACTIVO">Activo</SelectItem>
-              <SelectItem value="INACTIVO">Inactivo</SelectItem>
-              <SelectItem value="VENCIDO">Vencido</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Filters */}
+        <Card className="border-2 hover:border-primary/20 transition-all duration-300">
+          <CardContent className="p-4">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                <Input
+                  placeholder="Buscar por nombre, cédula o ID..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-10 h-11 border-2 focus:border-primary transition-colors"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as WorkerStatus | 'all')}>
+                <SelectTrigger className="w-full sm:w-48 h-11 border-2 focus:border-primary transition-colors">
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos los estados</SelectItem>
+                  <SelectItem value="ACTIVO">Activos</SelectItem>
+                  <SelectItem value="INACTIVO">Inactivos</SelectItem>
+                  <SelectItem value="VENCIDO">Vencidos</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {(search || statusFilter !== 'all') && (
+              <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Mostrando {workers?.length || 0} resultado(s)</span>
+                {(search || statusFilter !== 'all') && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSearch('');
+                      setStatusFilter('all');
+                    }}
+                    className="h-7 text-xs"
+                  >
+                    Limpiar filtros
+                  </Button>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="flex flex-col items-center justify-center py-16">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground text-sm">Cargando trabajadores...</p>
           </div>
         ) : workers?.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Users className="h-12 w-12 text-muted-foreground/50" />
-            <h3 className="mt-4 text-lg font-medium">No hay trabajadores</h3>
-            <p className="text-muted-foreground">Comienza registrando tu primer trabajador</p>
-          </div>
+          <Card className="border-2 border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="h-16 w-16 mb-4 rounded-full bg-muted flex items-center justify-center">
+                <Users className="h-8 w-8 text-muted-foreground/50" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">No hay trabajadores</h3>
+              <p className="text-muted-foreground mb-6 max-w-sm">
+                {search || statusFilter !== 'all' 
+                  ? 'No se encontraron trabajadores con los filtros aplicados'
+                  : 'Comienza registrando tu primer trabajador'}
+              </p>
+              {!search && statusFilter === 'all' && (
+                <Button onClick={() => { setSelectedWorker(null); setFormOpen(true); }}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nuevo Trabajador
+                </Button>
+              )}
+            </CardContent>
+          </Card>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {workers?.map((worker) => (
-              <div key={worker.id}>
+          <div className="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 animate-slide-up">
+            {workers?.map((worker, index) => (
+              <div 
+                key={worker.id}
+                className="animate-scale-in"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
                 <WorkerCard
                   worker={worker}
                   onEdit={handleEdit}

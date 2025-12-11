@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap");
 
 @layer base {
   :root {
@@ -44,19 +44,46 @@
     --radius: 0.625rem;
 
     /* Custom Design Tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(152, 69%, 35%) 0%, hsl(152, 69%, 25%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(172, 66%, 44%) 0%, hsl(172, 66%, 34%) 100%);
-    --gradient-header: linear-gradient(135deg, hsl(152, 69%, 30%) 0%, hsl(150, 30%, 12%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(142, 71%, 45%) 0%, hsl(142, 71%, 35%) 100%);
-    --gradient-warning: linear-gradient(135deg, hsl(38, 92%, 50%) 0%, hsl(38, 92%, 40%) 100%);
-    --gradient-danger: linear-gradient(135deg, hsl(0, 72%, 51%) 0%, hsl(0, 72%, 41%) 100%);
-    
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(152, 69%, 35%) 0%,
+      hsl(152, 69%, 25%) 100%
+    );
+    --gradient-accent: linear-gradient(
+      135deg,
+      hsl(172, 66%, 44%) 0%,
+      hsl(172, 66%, 34%) 100%
+    );
+    --gradient-header: linear-gradient(
+      135deg,
+      hsl(152, 69%, 30%) 0%,
+      hsl(150, 30%, 12%) 100%
+    );
+    --gradient-success: linear-gradient(
+      135deg,
+      hsl(142, 71%, 45%) 0%,
+      hsl(142, 71%, 35%) 100%
+    );
+    --gradient-warning: linear-gradient(
+      135deg,
+      hsl(38, 92%, 50%) 0%,
+      hsl(38, 92%, 40%) 100%
+    );
+    --gradient-danger: linear-gradient(
+      135deg,
+      hsl(0, 72%, 51%) 0%,
+      hsl(0, 72%, 41%) 100%
+    );
+
     --shadow-sm: 0 1px 2px 0 hsl(150 30% 11% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(150 30% 11% / 0.1), 0 2px 4px -2px hsl(150 30% 11% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(150 30% 11% / 0.1), 0 4px 6px -4px hsl(150 30% 11% / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(150 30% 11% / 0.1), 0 8px 10px -6px hsl(150 30% 11% / 0.1);
+    --shadow-md: 0 4px 6px -1px hsl(150 30% 11% / 0.1),
+      0 2px 4px -2px hsl(150 30% 11% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(150 30% 11% / 0.1),
+      0 4px 6px -4px hsl(150 30% 11% / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(150 30% 11% / 0.1),
+      0 8px 10px -6px hsl(150 30% 11% / 0.1);
     --shadow-glow: 0 0 20px hsl(152 69% 35% / 0.3);
-    
+
     --sidebar-background: 150 30% 11%;
     --sidebar-foreground: 150 20% 94%;
     --sidebar-primary: 152 69% 45%;
@@ -101,7 +128,7 @@
     --border: 152 25% 20%;
     --input: 152 25% 20%;
     --ring: 152 69% 45%;
-    
+
     --sidebar-background: 150 30% 4%;
     --sidebar-foreground: 150 20% 94%;
     --sidebar-primary: 152 69% 45%;
@@ -123,7 +150,12 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display font-bold tracking-tight;
   }
 }
@@ -132,41 +164,83 @@
   .gradient-primary {
     background: var(--gradient-primary);
   }
-  
+
   .gradient-accent {
     background: var(--gradient-accent);
   }
-  
+
   .gradient-header {
     background: var(--gradient-header);
   }
-  
+
   .gradient-success {
     background: var(--gradient-success);
   }
-  
+
   .gradient-warning {
     background: var(--gradient-warning);
   }
-  
+
   .gradient-danger {
     background: var(--gradient-danger);
   }
-  
+
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 0.5s ease-out forwards;
   }
-  
+
   .animate-slide-up {
     animation: slideUp 0.5s ease-out forwards;
   }
-  
+
   .animate-scale-in {
     animation: scaleIn 0.3s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.4s ease-out forwards;
+  }
+
+  .animate-bounce-in {
+    animation: bounceIn 0.6s ease-out forwards;
+  }
+
+  /* Responsive text utilities */
+  .text-responsive-xl {
+    @apply text-2xl sm:text-3xl md:text-4xl;
+  }
+
+  .text-responsive-lg {
+    @apply text-xl sm:text-2xl md:text-3xl;
+  }
+
+  .text-responsive-md {
+    @apply text-lg sm:text-xl md:text-2xl;
+  }
+
+  /* Glass morphism effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Card hover effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  /* Mobile safe areas */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
@@ -201,6 +275,34 @@
   }
 }
 
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;
@@ -215,8 +317,44 @@
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 4px;
+  transition: background 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  /* Reduce motion for better mobile performance */
+  .reduce-motion {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Better touch targets */
+  button,
+  a {
+    min-height: 44px;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tablet-col-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
