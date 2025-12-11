@@ -16,7 +16,13 @@ export default function Verify() {
 
   useEffect(() => {
     async function verify() {
-      if (!token) return;
+      if (!token) {
+        console.log('❌ No hay token en la URL');
+        return;
+      }
+
+      console.log('🔍 Verificando token:', token);
+      console.log('🌐 Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
 
       const { data: qrData, error: qrError } = await supabase
         .from('qr_codes')
@@ -24,29 +30,37 @@ export default function Verify() {
         .eq('token', token)
         .maybeSingle();
 
+      console.log('📦 Respuesta de Supabase:', { qrData, qrError });
+
       setLoading(false);
 
       if (qrError || !qrData) {
+        console.log('❌ Error o no hay datos:', qrError?.message || 'No se encontró el QR');
         setStatus('invalid');
         return;
       }
 
       if (qrData.is_revoked) {
+        console.log('🚫 QR revocado');
         setStatus('revoked');
         return;
       }
 
       const workerData = qrData.workers as unknown as Worker;
+      console.log('👤 Datos del trabajador:', workerData);
 
       const today = new Date();
       const validUntil = new Date(workerData.valid_until);
       setExpirationDate(workerData.valid_until);
 
       if (workerData.status !== 'ACTIVO' || workerData.deleted_at) {
+        console.log('⚠️ Trabajador no activo o eliminado');
         setStatus('invalid');
       } else if (validUntil < today) {
+        console.log('⏰ Carnet vencido');
         setStatus('expired');
       } else {
+        console.log('✅ QR válido, redirigiendo...');
         setStatus('valid');
         setWorkerId(workerData.id);
       }
