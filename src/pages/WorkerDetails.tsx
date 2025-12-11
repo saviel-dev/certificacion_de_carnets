@@ -143,41 +143,61 @@ export default function WorkerDetails() {
 
         <div className="container mx-auto p-4 flex flex-col items-center">
 
-
           {/* MAIN CARD - The Green Design */}
-          <div className="w-full max-w-[500px] bg-[#22c55e] rounded-2xl shadow-2xl overflow-hidden relative">
+          <div className="w-full max-w-[500px] bg-gradient-to-br from-[#5E936C] to-[#4a7a56] rounded-2xl shadow-2xl overflow-hidden relative">
+            
+            {/* Background Pattern/Texture Overlay */}
+            <div className="absolute inset-0 opacity-10" 
+                 style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}>
+            </div>
+
             {/* Header Content */}
-            <div className="pt-10 pb-6 flex flex-col items-center text-center px-4">
-              {/* Profile Image */}
-              <div className="relative mb-3">
-                <div className="h-32 w-32 rounded-full border-[5px] border-white overflow-hidden bg-white shadow-md">
-                  {worker.photo_url ? (
-                    <img
-                      src={worker.photo_url}
-                      alt={fullName}
-                      className="h-full w-full object-cover pointer-events-none"
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-gray-200 flex items-center justify-center text-gray-400">
-                      <span className="text-2xl font-bold">
-                        {worker.first_name?.[0]}
-                      </span>
-                    </div>
-                  )}
+            <div className="pt-8 pb-6 px-6 flex flex-row items-center justify-between relative z-10">
+              {/* Left Side: Profile Info */}
+              <div className="flex flex-col items-start text-left">
+                {/* Profile Image */}
+                <div className="relative mb-3">
+                  <div className="h-24 w-24 rounded-full border-[4px] border-white/90 overflow-hidden bg-white shadow-lg">
+                    {worker.photo_url ? (
+                      <img
+                        src={worker.photo_url}
+                        alt={fullName}
+                        className="h-full w-full object-cover pointer-events-none"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-gray-200 flex items-center justify-center text-gray-400">
+                        <span className="text-xl font-bold">
+                          {worker.first_name?.[0]}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
+
+                {/* Name & ID */}
+                <h1 className="text-white text-xl font-bold capitalize tracking-wide leading-tight mb-1 drop-shadow-md">
+                  {fullName}
+                </h1>
+                <p className="text-green-50 text-sm font-medium tracking-wide">
+                  ID: {worker.internal_id}
+                </p>
               </div>
 
-              {/* Name & ID */}
-              <h1 className="text-white text-2xl font-bold capitalize tracking-wide mb-1">
-                {fullName}
-              </h1>
-              <p className="text-green-100 text-sm opacity-90">
-                ID: {worker.internal_id}
-              </p>
+              {/* Right Side: Company Branding - Enhanced */}
+              <div className="flex flex-col items-center justify-center bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 shadow-sm">
+                <img 
+                  src="/img/logo.png" 
+                  alt="Tiunet" 
+                  className="h-20 w-auto object-contain mb-1 drop-shadow-md filter brightness-110" 
+                />
+                <span className="text-white font-extrabold text-lg tracking-widest drop-shadow-sm">
+                  TIUNET
+                </span>
+              </div>
             </div>
 
             {/* White Info Panel */}
-            <div className="bg-white mx-4 mb-4 rounded-xl p-6 shadow-lg">
+            <div className="bg-white mx-4 mb-4 rounded-xl p-6 shadow-lg relative z-10">
               <h2 className="text-xl font-bold text-center text-gray-800 mb-6 capitalize">
                 información Personal
               </h2>
