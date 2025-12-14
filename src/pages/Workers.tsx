@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { useWorkers, useGenerateQR, useRevokeQR, useDeleteWorker, useDepartments } from '@/hooks/useWorkers';
-import { WorkerCard } from '@/components/workers/WorkerCard';
 import { WorkerForm } from '@/components/workers/WorkerForm';
 import { WorkerProfileModal } from '@/components/workers/WorkerProfileModal';
 import { Worker, QRCode, WorkerStatus } from '@/types/worker';
@@ -9,10 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Search, Users, Loader2, HelpCircle } from 'lucide-react';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { Plus, Search, Users, Loader2, HelpCircle, User, QrCode, Eye, Edit, Trash2 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { toast } from 'sonner';
 import { useWorkerTour } from '@/hooks/useWorkerTour';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function Workers() {
   const [search, setSearch] = useState('');
@@ -192,31 +194,132 @@ export default function Workers() {
             </CardContent>
           </Card>
         ) : (
-          <div id="workers-grid" className="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 animate-slide-up">
-            {workers?.map((worker, index) => (
-              <div 
-                key={worker.id}
-                className="animate-scale-in"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <WorkerCard
-                  worker={worker}
-                  onEdit={handleEdit}
-                  onDelete={(id) => deleteWorker.mutate(id)}
-                  onViewProfile={handleViewProfile}
-                />
-                {worker.qr_codes.filter(qr => !qr.is_revoked).map(qr => (
-                  <QRCodeCanvas
-                    key={qr.id}
-                    id={`qr-temp-${qr.token}`}
-                    value={`${window.location.origin}/verify/${qr.token}`}
-                    size={400}
-                    style={{ display: 'none' }}
-                    fgColor="#1a6b47"
-                  />
-                ))}
-              </div>
-            ))}
+          <div className="bg-white border border-gray-200 rounded overflow-hidden animate-slide-up">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-semibold tracking-wider border-b border-gray-100">
+                  <tr>
+                    <th className="px-6 py-4">Trabajador</th>
+                    <th className="px-6 py-4">Cargo</th>
+                    <th className="px-6 py-4">Departamento</th>
+                    <th className="px-6 py-4">Válido Hasta</th>
+                    <th className="px-6 py-4">Estado</th>
+                    <th className="px-6 py-4 text-center">QR</th>
+                    <th className="px-6 py-4 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {workers?.map((worker, index) => {
+                    const activeQR = worker.qr_codes.find(qr => !qr.is_revoked);
+                    const fullName = `${worker.first_name} ${worker.last_name}`;
+                    
+                    return (
+                      <tr 
+                        key={worker.id} 
+                        className="hover:bg-gray-50 transition-colors animate-scale-in"
+                        style={{ animationDelay: `${index * 30}ms` }}
+                      >
+                        {/* Trabajador (foto + nombre + ID) */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-100">
+                              {worker.photo_url ? (
+                                <img
+                                  src={worker.photo_url}
+                                  alt={fullName}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center bg-green-100">
+                                  <User className="h-5 w-5 text-green-600" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="font-medium text-gray-800 truncate">{fullName}</div>
+                              <div className="text-xs text-gray-500 font-mono">{worker.internal_id}</div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Cargo */}
+                        <td className="px-6 py-4 text-gray-800">{worker.position}</td>
+
+                        {/* Departamento */}
+                        <td className="px-6 py-4 text-gray-600">{worker.department}</td>
+
+                        {/* Válido Hasta */}
+                        <td className="px-6 py-4 text-gray-600">
+                          {format(new Date(worker.valid_until), "dd MMM yyyy", { locale: es })}
+                        </td>
+
+                        {/* Estado */}
+                        <td className="px-6 py-4">
+                          <StatusBadge status={worker.status} />
+                        </td>
+
+                        {/* QR */}
+                        <td className="px-6 py-4 text-center">
+                          {activeQR ? (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
+                              <QrCode className="h-3.5 w-3.5" />
+                              Activo
+                            </div>
+                          ) : (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-500">
+                              <QrCode className="h-3.5 w-3.5" />
+                              Sin QR
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Acciones */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleViewProfile(worker)}
+                              className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(worker)}
+                              className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteWorker.mutate(worker.id)}
+                              className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </td>
+
+                        {/* QR codes ocultos para descarga */}
+                        {worker.qr_codes.filter(qr => !qr.is_revoked).map(qr => (
+                          <QRCodeCanvas
+                            key={qr.id}
+                            id={`qr-temp-${qr.token}`}
+                            value={`${window.location.origin}/verify/${qr.token}`}
+                            size={400}
+                            style={{ display: 'none' }}
+                            fgColor="#1a6b47"
+                          />
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
