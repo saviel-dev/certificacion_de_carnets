@@ -1,7 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { useWorkers } from '@/hooks/useWorkers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, UserCheck, UserX, Clock, QrCode, Plus, ArrowRight } from 'lucide-react';
+import { Users, UserCheck, UserX, Clock, QrCode, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -129,7 +129,7 @@ export default function Dashboard() {
             <CardTitle>Acciones Rápidas</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3">
               <Button 
                 asChild 
                 size="lg"
@@ -142,23 +142,6 @@ export default function Dashboard() {
                   </div>
                   <span className="text-xs text-primary-foreground/80">
                     Ver, crear y editar carnets de trabajadores
-                  </span>
-                </Link>
-              </Button>
-              
-              <Button 
-                asChild 
-                variant="outline"
-                size="lg" 
-                className="h-auto flex-col items-start p-4 group hover:bg-primary/5"
-              >
-                <Link to="/workers">
-                  <div className="flex items-center gap-2 w-full mb-1">
-                    <Plus className="h-5 w-5" />
-                    <span className="font-semibold">Nuevo Trabajador</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    Registrar un nuevo carnet
                   </span>
                 </Link>
               </Button>
